@@ -13,7 +13,7 @@ import interpose
 from interpose_arg_helper import ReorderType
 
 from mininet_util import start_mininet,num_flow_table_entries
-from floodlight_util import start_floodlight,add_remove_flowmod
+from floodlight_util import start_floodlight,add_flowmod
 
 
 '''
