@@ -2,6 +2,7 @@ import os
 import time
 import subprocess
 import shutil
+import json
 
 FILE_DIR = os.path.dirname(os.path.abspath(__file__))
 FLOODLIGHT_JAR = os.path.join(
@@ -26,3 +27,20 @@ def start_floodlight():
 
     # wait some time for floodlight to get settled
     time.sleep(5)
+
+    
+def add_flowmod():
+    flow_entry_dict = {
+        'switch': '00:00:00:00:00:00:00:01',
+        'name': 'flow-mod-1',
+        'cookie': '0',
+        'priority': '32768',
+        'ingress-port': '1',
+        'active': 'true',
+        'actions': 'output=2'
+        }
+    
+    cmd_vec = [
+        'curl','-d',json.dumps(flow_entry_dict),
+        'http://127.0.0.1:8080/wm/staticflowentrypusher/json']
+    subprocess.call(cmd_vec)

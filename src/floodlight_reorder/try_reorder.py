@@ -13,7 +13,7 @@ import interpose
 from interpose_arg_helper import ReorderType
 
 from mininet_util import start_mininet,num_flow_table_entries
-from floodlight_util import start_floodlight
+from floodlight_util import start_floodlight,add_remove_flowmod
 
 
 '''
@@ -53,7 +53,10 @@ def run():
     start_sdn_fuzzer_in_thread()
     print '[LOG] Starting mininet'
     switch_name = start_mininet(1,FUZZER_LISTENING_PORT)[0]
-
+    print '[LOG] Sending static entries'
+    add_flowmod()
+    time.sleep(5)
+    
     num_entries = num_flow_table_entries(switch_name)
     print '\nNumber of flow table entries: %i\n' % num_entries
 
