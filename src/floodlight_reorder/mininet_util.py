@@ -1,6 +1,8 @@
 import time
 import subprocess
 import os
+import Queue
+import atexit
 
 from mininet.topo import Topo
 from mininet.node import OVSSwitch, Controller, RemoteController
@@ -25,7 +27,9 @@ def _switch_names(num_switches):
     for i in range(1, num_switches+1):
         to_return.append('s%d' % i)
     return to_return
-                
+
+mininet_to_kill_queue = Queue.Queue()
+
 def start_mininet(num_switches,controller_port=DEFAULT_CONTROLLER_PORT):
     '''
     @returns {list} --- Each element is a string containing a switch
@@ -36,12 +40,27 @@ def start_mininet(num_switches,controller_port=DEFAULT_CONTROLLER_PORT):
         topo=FlatTopo(switches=num_switches), build=False, switch=OVSSwitch)
     net.addController(
         RemoteController('c0', ip='127.0.0.1', port=controller_port))
+
+    global mininet_to_kill_queue
+    mininet_to_kill_queue.put(net)
+    
     time.sleep(5)
     net.build()
     time.sleep(5)
     net.start()
     time.sleep(5)
     return _switch_names(num_switches)
+
+@atexit.register
+def cleanup_mininet():
+    print '[Log] Cleaning stray mininets'
+    global mininet_to_kill_queue
+    while True:
+        try:
+            net_to_kill = mininet_to_kill_queue.get(False,1)
+            net_to_kill.stop()
+        except Queue.Empty:
+            break
     
 
 def num_flow_table_entries(switch_name):

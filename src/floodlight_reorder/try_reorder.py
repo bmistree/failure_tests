@@ -49,6 +49,7 @@ def _thread_sdn_fuzzer():
 def run():
     print '[LOG] Starting floodlight'
     start_floodlight()
+    time.sleep(5)
     print '[LOG] Starting sdn fuzzer'
     start_sdn_fuzzer_in_thread()
     print '[LOG] Starting mininet'
