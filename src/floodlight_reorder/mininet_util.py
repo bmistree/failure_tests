@@ -36,13 +36,11 @@ def start_mininet(num_switches,controller_port=DEFAULT_CONTROLLER_PORT):
         topo=FlatTopo(switches=num_switches), build=False, switch=OVSSwitch)
     net.addController(
         RemoteController('c0', ip='127.0.0.1', port=controller_port))
-    print '[Log] Setting up mininet'
     time.sleep(5)
     net.build()
     time.sleep(5)
     net.start()
     time.sleep(5)
-    print '[Log]Mininet setup complete'
     return _switch_names(num_switches)
     
 
