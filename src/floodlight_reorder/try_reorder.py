@@ -29,7 +29,7 @@ class HostPortPair(object):
         self.hostname = hostname
         self.port = port
 
-FUZZER_LISTENING_PORT = 8888
+FUZZER_LISTENING_PORT = 18589
 FUZZER_LISTENING_ADDR = HostPortPair('0.0.0.0',FUZZER_LISTENING_PORT)
 CONTROLLER_CONNECT_TO_ADDR = HostPortPair('127.0.0.1',6633)
 
@@ -53,6 +53,7 @@ def run():
     print '[LOG] Starting sdn fuzzer'
     start_sdn_fuzzer_in_thread()
     print '[LOG] Starting mininet'
+    time.sleep(20)
     switch_name = start_mininet(1,FUZZER_LISTENING_PORT)[0]
     print '[LOG] Sending static entries'
     add_flowmod()
@@ -61,6 +62,8 @@ def run():
     num_entries = num_flow_table_entries(switch_name)
     print '\nNumber of flow table entries: %i\n' % num_entries
 
+    time.sleep(20)
+    
 
 
 if __name__ == '__main__':
