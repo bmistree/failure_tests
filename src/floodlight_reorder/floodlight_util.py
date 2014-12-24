@@ -46,7 +46,7 @@ def cleanup_floodlights():
     while True:
         try:
             p_to_kill = floodlight_process_queue.get(False,1)
-            os.kill(p_to_kill.pid,signal.SIGABRT)
+            os.kill(p_to_kill.pid,signal.SIGTERM)
         except Queue.Empty:
             break
 
