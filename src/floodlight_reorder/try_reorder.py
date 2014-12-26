@@ -66,10 +66,13 @@ def run():
     remove_flowmod()
     time.sleep(FLOWMOD_TIMEOUT_SECONDS*3)
     num_entries = num_flow_table_entries(switch_name)
-    print '\nNumber of flow table entries: %i\n' % num_entries
 
-    time.sleep(20)
-    
+    print '\n\n'
+    if num_entries == 0:
+        print 'NO REORDERING'
+    else:
+        print 'REORDERING OCCURRED; num entries: %i' % num_entries
+    print '\n\n'
 
 
 if __name__ == '__main__':
