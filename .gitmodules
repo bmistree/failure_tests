@@ -1,3 +1,6 @@
 [submodule "deps/sdn_fuzz"]
 	path = deps/sdn_fuzz
 	url = git@github.com:bmistree/sdn_fuzz.git
+[submodule "deps/pyretic"]
+	path = deps/pyretic
+	url = https://github.com/frenetic-lang/pyretic.git
