@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import time
+import json
 import threading
 import os
 import sys
@@ -40,12 +41,15 @@ def start_sdn_fuzzer_in_thread():
     # wait some time until it's started
     time.sleep(5)
 
+FLOWMOD_TIMEOUT_SECONDS=3.0
+
 def _thread_sdn_fuzzer():
     interpose.run(
-        ReorderType.WRITE_THROUGH, FUZZER_LISTENING_ADDR,
-        CONTROLLER_CONNECT_TO_ADDR,'')
+        ReorderType.TIMED_REVERSE, FUZZER_LISTENING_ADDR,
+        CONTROLLER_CONNECT_TO_ADDR,
+        json.dumps({'timeout_seconds':FLOWMOD_TIMEOUT_SECONDS}))
 
-
+    
 def run():
     print '[LOG] Starting floodlight'
     start_floodlight()
@@ -57,7 +61,7 @@ def run():
     switch_name = start_mininet(1,FUZZER_LISTENING_PORT)[0]
     print '[LOG] Sending static entries'
     add_flowmod()
-    time.sleep(5)
+    time.sleep(FLOWMOD_TIMEOUT_SECONDS*3)
     
     num_entries = num_flow_table_entries(switch_name)
     print '\nNumber of flow table entries: %i\n' % num_entries
