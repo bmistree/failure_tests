@@ -14,7 +14,7 @@ import interpose
 from interpose_arg_helper import ReorderType
 
 from mininet_util import start_mininet,num_flow_table_entries
-from floodlight_util import start_floodlight,add_flowmod
+from floodlight_util import start_floodlight,add_flowmod,remove_flowmod
 
 
 '''
@@ -59,10 +59,12 @@ def run():
     print '[LOG] Starting mininet'
     time.sleep(20)
     switch_name = start_mininet(1,FUZZER_LISTENING_PORT)[0]
-    print '[LOG] Sending static entries'
+    print '[LOG] Sending static add entry'
     add_flowmod()
+    time.sleep(FLOWMOD_TIMEOUT_SECONDS/5.)
+    print '[LOG] Sending static remove entry'
+    remove_flowmod()
     time.sleep(FLOWMOD_TIMEOUT_SECONDS*3)
-    
     num_entries = num_flow_table_entries(switch_name)
     print '\nNumber of flow table entries: %i\n' % num_entries
 

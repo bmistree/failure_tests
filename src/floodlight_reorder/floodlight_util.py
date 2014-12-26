@@ -61,8 +61,27 @@ def add_flowmod():
         'active': 'true',
         'actions': 'output=2'
         }
-    
+
     cmd_vec = [
         'curl','-d',json.dumps(flow_entry_dict),
         'http://127.0.0.1:8080/wm/staticflowentrypusher/json']
-    subprocess.call(cmd_vec)
+    
+    with open(os.devnull,'wb') as dev_null_fd:
+        subprocess.call(cmd_vec, stdout=dev_null_fd,stderr=subprocess.STDOUT)
+
+    
+def remove_flowmod():
+    '''
+    Sends a removal message to remove flow table entry added by a call
+    to add_flowmod.
+    '''
+    flow_entry_dict = {
+        'name': 'flow-mod-1'
+        }
+
+    cmd_vec = [
+        'curl','-X','DELETE','-d',json.dumps(flow_entry_dict),
+        'http://127.0.0.1:8080/wm/staticflowentrypusher/json']
+    
+    with open(os.devnull,'wb') as dev_null_fd:
+        subprocess.call(cmd_vec, stdout=dev_null_fd,stderr=subprocess.STDOUT)
