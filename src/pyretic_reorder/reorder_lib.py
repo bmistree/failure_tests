@@ -28,10 +28,6 @@ class ReorderLib(DynamicPolicy):
         Add a policy to switches
         '''
         print '\nFirst call\n'
-
-        import os
-        print os.getcwd()
-        print '\n'
         
         mac_add = '00:11:22:33:44:50'
         srcip_add = '10.1.1.1'
@@ -55,6 +51,7 @@ class ReorderLib(DynamicPolicy):
         srcip_add = '10.1.1.1'
         add_match = match(srcmac=mac_add) & match(srcip=srcip_add)
         self.policy = ~union([add_match])
+        print self.policy
 
 
 def main ():
