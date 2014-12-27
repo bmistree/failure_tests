@@ -4,3 +4,6 @@
 [submodule "deps/pyretic"]
 	path = deps/pyretic
 	url = https://github.com/frenetic-lang/pyretic.git
+[submodule "deps/pox"]
+	path = deps/pox
+	url = https://github.com/noxrepo/pox.git
