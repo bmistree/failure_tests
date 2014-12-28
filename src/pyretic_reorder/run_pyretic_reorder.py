@@ -12,19 +12,26 @@ DEPS_PATH = os.path.abspath(os.path.join(FILE_DIR,'..','..','deps'))
 PYRETIC_PATH = os.path.join(DEPS_PATH,'pyretic')
 MININET_PATH = os.path.join(PYRETIC_PATH,'mininet')
 POX_EXEC = os.path.join(DEPS_PATH,'pox','pox.py')
+INTERPOSE_DIR = os.path.join(
+    FILE_DIR,'..','..','deps','sdn_fuzz','bin')
 
+# common imports
 sys.path.append(os.path.join(FILE_DIR,'..','common'))
-sys.path.append(PYRETIC_PATH)
+import mn_util
 
+# pyretic imports
+sys.path.append(PYRETIC_PATH)
 from pyretic.core.runtime import Runtime
 from pyretic.backend.backend import Backend
-
-import reorder_lib
 from pyretic.lib.corelib import *
 from pyretic.lib.std import *
 
+# interposition imports
+sys.path.append(INTERPOSE_DIR)
+import interpose
+from interpose_arg_helper import ReorderType
 
-import mn_util
+import reorder_lib
 
 
 of_client = None
@@ -41,6 +48,7 @@ def signal_handler(sig, frame):
 SINGLETON_REORDER_LIB = reorder_lib.ReorderLib()
 def reorder_lib_main ():
     return SINGLETON_REORDER_LIB >> flood()
+
 
 def start_mininet():
     global mininet
@@ -118,5 +126,8 @@ def main():
     
     signal.pause()
 
+
+
+    
 if __name__ == '__main__':
     main()

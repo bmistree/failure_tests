@@ -10,12 +10,15 @@ INTERPOSE_DIR = os.path.join(
     FILE_DIR,'..','..','deps','sdn_fuzz','bin')
 sys.path.append(INTERPOSE_DIR)
 
-import interpose
-from interpose_arg_helper import ReorderType
-
 from mininet_util import start_mininet,num_flow_table_entries
 from floodlight_util import start_floodlight,add_flowmod,remove_flowmod
 
+# import common
+COMMON_DIR = os.path.join(FILE_DIR,'..','common')
+sys.path.append(COMMON_DIR)
+from interposition_util import (
+    start_sdn_fuzzer_in_thread,FUZZER_LISTENING_PORT,
+    FLOWMOD_TIMEOUT_SECONDS)
 
 '''
   1) Starts floodlight.
@@ -24,31 +27,6 @@ from floodlight_util import start_floodlight,add_flowmod,remove_flowmod
   4) Send static entries.
   5) Read number of entries and compare against expected.
 '''
-
-class HostPortPair(object):
-    def __init__(self,hostname,port):
-        self.hostname = hostname
-        self.port = port
-
-FUZZER_LISTENING_PORT = 18589
-FUZZER_LISTENING_ADDR = HostPortPair('0.0.0.0',FUZZER_LISTENING_PORT)
-CONTROLLER_CONNECT_TO_ADDR = HostPortPair('127.0.0.1',6633)
-
-def start_sdn_fuzzer_in_thread():
-    t = threading.Thread(target=_thread_sdn_fuzzer)
-    t.setDaemon(True)
-    t.start()
-    # wait some time until it's started
-    time.sleep(5)
-
-FLOWMOD_TIMEOUT_SECONDS=3.0
-
-def _thread_sdn_fuzzer():
-    interpose.run(
-        ReorderType.TIMED_REVERSE, FUZZER_LISTENING_ADDR,
-        CONTROLLER_CONNECT_TO_ADDR,
-        json.dumps({'timeout_seconds':FLOWMOD_TIMEOUT_SECONDS}))
-
     
 def run():
     print '[LOG] Starting floodlight'
