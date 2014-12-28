@@ -23,11 +23,11 @@ import reorder_lib
 of_client = None
 mininet = None
 
-def signal_handler(signal, frame):
+def signal_handler(sig, frame):
     print '\n----starting pyretic shutdown------'
     print 'attempting to kill of_client'
     of_client.kill()
-    mininet.kill()
+    os.kill(mininet.pid,signal.SIGTERM)
     print 'pyretic.py done'
     sys.exit(0)
 
@@ -48,7 +48,7 @@ def main():
     print '\nStarting mininet\n'
     env = os.environ.copy()
     env['HOME'] = DEPS_PATH
-    cmd_vec = ['sudo','bash',os.path.join(PYRETIC_PATH,'mininet.sh')]
+    cmd_vec = ['bash',os.path.join(PYRETIC_PATH,'mininet.sh')]
     mininet = subprocess.Popen(
         cmd_vec,stdout=sys.stdout,stderr=subprocess.STDOUT,
         env=env)
