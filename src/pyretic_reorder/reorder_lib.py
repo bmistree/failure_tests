@@ -1,27 +1,24 @@
 import sys
-# sys.path.append('../../../pox/pox/')
 
 import threading
 import time
 
 from pyretic.lib.corelib import *
 from pyretic.lib.std import *
-from pyretic.modules.mac_learner import mac_learner
+
 
 class ReorderLib(DynamicPolicy):
 
     def __init__(self):
         super(ReorderLib,self).__init__(true)
-        t = threading.Thread(target=self.running_thread)
-        t.setDaemon(True)
-        t.start()
+
         
-    def running_thread(self):
-        time.sleep(5)
+    def change_policies(self):
+        time.sleep(1)
         self.first_call()
-        time.sleep(5)
+        time.sleep(1)
         self.second_call()
-        
+
         
     def first_call(self):
         '''
@@ -54,6 +51,3 @@ class ReorderLib(DynamicPolicy):
         self.policy = ~union([add_match])
         print self.policy
         
-
-def main ():
-    return ReorderLib() >> flood()

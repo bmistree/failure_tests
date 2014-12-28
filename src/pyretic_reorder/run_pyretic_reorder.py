@@ -17,8 +17,9 @@ sys.path.append(PYRETIC_PATH)
 from pyretic.core.runtime import Runtime
 from pyretic.backend.backend import Backend
 
-
 import reorder_lib
+from pyretic.lib.corelib import *
+from pyretic.lib.std import *
 
 of_client = None
 mininet = None
@@ -32,6 +33,11 @@ def signal_handler(sig, frame):
     sys.exit(0)
 
 
+SINGLETON_REORDER_LIB = reorder_lib.ReorderLib()
+def reorder_lib_main ():
+    return SINGLETON_REORDER_LIB >> flood()
+
+    
 def main():
     global of_client,mininet
     mode = 'proactive1'
@@ -41,8 +47,7 @@ def main():
     
     # Set default handler.
     runtime = Runtime(
-        Backend(),reorder_lib.main,path_main,kwargs,mode,logging_verbosity)
-
+        Backend(),reorder_lib_main,path_main,kwargs,mode,logging_verbosity)
 
     # start mininet
     print '\nStarting mininet\n'
@@ -66,6 +71,15 @@ def main():
         env=env)
     
     signal.signal(signal.SIGINT, signal_handler)
+
+    time.sleep(3)
+
+    # Update policies on switches.
+    print '\nUpdating policies\n'
+    SINGLETON_REORDER_LIB.change_policies()
+    
+
+    
     signal.pause()
 
 if __name__ == '__main__':
