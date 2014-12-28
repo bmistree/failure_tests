@@ -1,5 +1,6 @@
 import time
 import subprocess
+import sys
 import os
 import Queue
 import atexit
@@ -8,6 +9,9 @@ from mininet.topo import Topo
 from mininet.node import OVSSwitch, Controller, RemoteController
 from mininet.net import Mininet
 
+FILE_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(FILE_DIR,'..','common'))
+import mn_util
 
 DEFAULT_CONTROLLER_PORT=6633
 
@@ -61,30 +65,6 @@ def cleanup_mininet():
             net_to_kill.stop()
         except Queue.Empty:
             break
-    
 
-def num_flow_table_entries(switch_name):
-    '''
-    @param {String} switch_name --- Likely just "s1", "s2", etc.
-    '''
-    cmd_vec = ['ovs-ofctl','dump-flows',switch_name]
-
-    (reading_pipe,writing_pipe) = os.pipe()
-    reading_pipe = os.fdopen(reading_pipe,'r')
-    writing_pipe = os.fdopen(writing_pipe,'w')
-
-    subprocess.call(cmd_vec,stdout=writing_pipe)
-    writing_pipe.flush()
-    writing_pipe.close()
-
-    # note starting from -1 here because must handle header returend
-    # as part of dump-flows command
-    num_entries = -1
-    for line in reading_pipe:
-        num_entries += 1
-
-    reading_pipe.close()
-    writing_pipe.close()
-    
-    return num_entries
-
+        
+num_flow_table_entries = mn_util.num_flow_table_entries
