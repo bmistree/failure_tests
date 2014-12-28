@@ -1,5 +1,5 @@
 import sys
-sys.path.append('../../../pox/pox/')
+# sys.path.append('../../../pox/pox/')
 
 import threading
 import time
@@ -21,7 +21,7 @@ class ReorderLib(DynamicPolicy):
         self.first_call()
         time.sleep(5)
         self.second_call()
-
+        
         
     def first_call(self):
         '''
