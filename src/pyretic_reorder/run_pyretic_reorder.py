@@ -10,6 +10,7 @@ FILE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 DEPS_PATH = os.path.abspath(os.path.join(FILE_DIR,'..','..','deps'))
 PYRETIC_PATH = os.path.join(DEPS_PATH,'pyretic')
+MININET_PATH = os.path.join(PYRETIC_PATH,'mininet')
 POX_EXEC = os.path.join(DEPS_PATH,'pox','pox.py')
 
 sys.path.append(os.path.join(FILE_DIR,'..','common'))
@@ -31,7 +32,7 @@ mininet = None
 
 def signal_handler(sig, frame):
     print '\n----starting pyretic shutdown------'
-    print 'attempting to kill of_client'
+    print 'attempting to kill of_client and mininet'
     of_client.kill()
     os.kill(mininet.pid,signal.SIGTERM)
     print 'pyretic.py done'
@@ -42,9 +43,31 @@ SINGLETON_REORDER_LIB = reorder_lib.ReorderLib()
 def reorder_lib_main ():
     return SINGLETON_REORDER_LIB >> flood()
 
-    
+def start_mininet():
+    global mininet
+    python=sys.executable
+    env = os.environ.copy()
+    env['HOME'] = DEPS_PATH
+
+    # clear existing mininets
+    with open(os.devnull,'wb') as dev_null_fd:
+        cmd_vec = [python,os.path.join(MININET_PATH,'mn'),'-c']
+        subprocess.call(
+            cmd_vec,stdout=dev_null_fd,stderr=subprocess.STDOUT,
+            env=env)
+
+    # start mininet
+    dev_null_fd = open(os.devnull,'wb')
+    cmd_vec = [
+        python,os.path.join(MININET_PATH,'mn'),'--custom',
+        os.path.join(MININET_PATH,'extra-topos.py'),'--controller','remote']
+    mininet = subprocess.Popen(
+        cmd_vec,stdout=dev_null_fd,stderr=subprocess.STDOUT,
+        env=env)
+
+
 def main():
-    global of_client,mininet
+    global of_client
     mode = 'proactive1'
     logging_verbosity = 'low'
     path_main = None
@@ -56,20 +79,16 @@ def main():
 
     # start mininet
     print '\nStarting mininet\n'
-    env = os.environ.copy()
-    env['HOME'] = DEPS_PATH
-    cmd_vec = ['bash',os.path.join(PYRETIC_PATH,'mininet.sh')]
-    mininet = subprocess.Popen(
-        cmd_vec,stdout=sys.stdout,stderr=subprocess.STDOUT,
-        env=env)
+    start_mininet()
 
     # pause while mininet is getting set up.
     time.sleep(1)
 
-    print '\nStarting mininet\n'
     # start pyretic
+    print '\nStarting pyretic\n'
     python=sys.executable
     cmd_vec = [python, os.path.abspath(POX_EXEC), 'of_client.pox_client']
+    env = os.environ.copy()
     env['PYTHONPATH'] = PYRETIC_PATH
     of_client = subprocess.Popen(
         cmd_vec,stdout=sys.stdout,stderr=subprocess.STDOUT,
