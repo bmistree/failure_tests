@@ -18,6 +18,9 @@ INTERPOSE_DIR = os.path.join(
 # common imports
 sys.path.append(os.path.join(FILE_DIR,'..','common'))
 import mn_util
+from interposition_util import (
+    start_sdn_fuzzer_in_thread,FUZZER_LISTENING_PORT,
+    FLOWMOD_TIMEOUT_SECONDS)
 
 # pyretic imports
 sys.path.append(PYRETIC_PATH)
@@ -25,11 +28,6 @@ from pyretic.core.runtime import Runtime
 from pyretic.backend.backend import Backend
 from pyretic.lib.corelib import *
 from pyretic.lib.std import *
-
-# interposition imports
-sys.path.append(INTERPOSE_DIR)
-import interpose
-from interpose_arg_helper import ReorderType
 
 import reorder_lib
 
@@ -67,14 +65,14 @@ def start_mininet():
     dev_null_fd = open(os.devnull,'wb')
     cmd_vec = [
         python,os.path.join(MININET_PATH,'mn'),'--custom',
-        os.path.join(MININET_PATH,'extra-topos.py'),'--controller','remote']
+        os.path.join(MININET_PATH,'extra-topos.py'),
+        ('--controller=remote,port=%i' % FUZZER_LISTENING_PORT)]
     mininet = subprocess.Popen(
         cmd_vec,stdout=dev_null_fd,stderr=subprocess.STDOUT,
         env=env)
-
+    
 
 def main():
-    global of_client
     mode = 'proactive1'
     logging_verbosity = 'low'
     path_main = None
@@ -84,32 +82,35 @@ def main():
     runtime = Runtime(
         Backend(),reorder_lib_main,path_main,kwargs,mode,logging_verbosity)
 
-    # start mininet
-    print '[LOG] Starting mininet'
-    start_mininet()
-
-    # pause while mininet is getting set up.
-    time.sleep(1)
-
     # start pyretic
     print '[LOG] Starting pyretic'
     python=sys.executable
     cmd_vec = [python, os.path.abspath(POX_EXEC), 'of_client.pox_client']
     env = os.environ.copy()
     env['PYTHONPATH'] = PYRETIC_PATH
+    global of_client
     of_client = subprocess.Popen(
         cmd_vec,stdout=sys.stdout,stderr=subprocess.STDOUT,
         env=env)
-    
-    signal.signal(signal.SIGINT, signal_handler)
+    time.sleep(FLOWMOD_TIMEOUT_SECONDS*3)
 
-    time.sleep(3)
+    # start sdn_fuzzer
+    print '[LOG] Starting sdn fuzzer'
+    start_sdn_fuzzer_in_thread()
+    time.sleep(FLOWMOD_TIMEOUT_SECONDS*2)
+    
+    # start mininet
+    print '[LOG] Starting mininet'
+    start_mininet()
+    time.sleep(FLOWMOD_TIMEOUT_SECONDS*2)
+
+    # listen for signal
+    signal.signal(signal.SIGINT, signal_handler)
 
     # Update policies on switches.
     print '[LOG] Updating policies'
     SINGLETON_REORDER_LIB.change_policies()
-    
-    time.sleep(3)
+    time.sleep(FLOWMOD_TIMEOUT_SECONDS*2)
 
     # Check number of flow table entries
     print '[LOG] Checking number of flow table entries'
