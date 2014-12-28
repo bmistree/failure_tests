@@ -6,12 +6,13 @@ from multiprocessing import Queue, Process
 
 import sys
 import os
-CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+FILE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-DEPS_PATH = os.path.abspath(os.path.join(CURRENT_DIR,'..','..','deps'))
+DEPS_PATH = os.path.abspath(os.path.join(FILE_DIR,'..','..','deps'))
 PYRETIC_PATH = os.path.join(DEPS_PATH,'pyretic')
 POX_EXEC = os.path.join(DEPS_PATH,'pox','pox.py')
 
+sys.path.append(os.path.join(FILE_DIR,'..','common'))
 sys.path.append(PYRETIC_PATH)
 
 from pyretic.core.runtime import Runtime
@@ -20,6 +21,10 @@ from pyretic.backend.backend import Backend
 import reorder_lib
 from pyretic.lib.corelib import *
 from pyretic.lib.std import *
+
+
+import mn_util
+
 
 of_client = None
 mininet = None
@@ -78,7 +83,20 @@ def main():
     print '\nUpdating policies\n'
     SINGLETON_REORDER_LIB.change_policies()
     
+    time.sleep(3)
 
+    # Check number of flow table entries
+    print '\nChecking number of flow table entries\n'
+    num_flow_table_entries = mn_util.num_flow_table_entries('s1')
+
+    if num_flow_table_entries != 11:
+        print (
+            '\nREORDERING occurred; num entries %i\n' %
+            num_flow_table_entries)
+    else:
+        print (
+            '\nNo reordering occurred; num entries %i\n' %
+            num_flow_table_entries)
     
     signal.pause()
 
