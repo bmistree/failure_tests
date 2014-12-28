@@ -31,11 +31,10 @@ of_client = None
 mininet = None
 
 def signal_handler(sig, frame):
-    print '\n----starting pyretic shutdown------'
-    print 'attempting to kill of_client and mininet'
+    print '[LOG] Starting shutdown'
     of_client.kill()
     os.kill(mininet.pid,signal.SIGTERM)
-    print 'pyretic.py done'
+    print '[LOG] Shutdown complete'
     sys.exit(0)
 
 
@@ -78,14 +77,14 @@ def main():
         Backend(),reorder_lib_main,path_main,kwargs,mode,logging_verbosity)
 
     # start mininet
-    print '\nStarting mininet\n'
+    print '[LOG] Starting mininet'
     start_mininet()
 
     # pause while mininet is getting set up.
     time.sleep(1)
 
     # start pyretic
-    print '\nStarting pyretic\n'
+    print '[LOG] Starting pyretic'
     python=sys.executable
     cmd_vec = [python, os.path.abspath(POX_EXEC), 'of_client.pox_client']
     env = os.environ.copy()
@@ -99,13 +98,13 @@ def main():
     time.sleep(3)
 
     # Update policies on switches.
-    print '\nUpdating policies\n'
+    print '[LOG] Updating policies'
     SINGLETON_REORDER_LIB.change_policies()
     
     time.sleep(3)
 
     # Check number of flow table entries
-    print '\nChecking number of flow table entries\n'
+    print '[LOG] Checking number of flow table entries'
     num_flow_table_entries = mn_util.num_flow_table_entries('s1')
 
     if num_flow_table_entries != 11:
