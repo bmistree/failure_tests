@@ -40,6 +40,7 @@ class ReorderLib(DynamicPolicy):
                 add_match >> second_match ])
         print self.policy
 
+
     def second_call(self):
         '''
         Add a new policy to switches, which causes switches to issue a
@@ -52,7 +53,7 @@ class ReorderLib(DynamicPolicy):
         add_match = match(srcmac=mac_add) & match(srcip=srcip_add)
         self.policy = ~union([add_match])
         print self.policy
-
+        
 
 def main ():
     return ReorderLib() >> flood()
