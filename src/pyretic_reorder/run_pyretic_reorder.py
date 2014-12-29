@@ -20,7 +20,7 @@ sys.path.append(os.path.join(FILE_DIR,'..','common'))
 import mn_util
 from interposition_util import (
     start_sdn_fuzzer_in_thread,FUZZER_LISTENING_PORT,
-    FLOWMOD_TIMEOUT_SECONDS)
+    FLOWMOD_TIMEOUT_SECONDS, start_sdn_fuzzer_pass_through_in_thread)
 
 # pyretic imports
 sys.path.append(PYRETIC_PATH)
@@ -67,6 +67,7 @@ def start_mininet():
         python,os.path.join(MININET_PATH,'mn'),'--custom',
         os.path.join(MININET_PATH,'extra-topos.py'),
         ('--controller=remote,port=%i' % FUZZER_LISTENING_PORT)]
+
     mininet = subprocess.Popen(
         cmd_vec,stdout=dev_null_fd,stderr=subprocess.STDOUT,
         env=env)
@@ -97,7 +98,8 @@ def main():
     # start sdn_fuzzer
     print '[LOG] Starting sdn fuzzer'
     start_sdn_fuzzer_in_thread()
-    time.sleep(FLOWMOD_TIMEOUT_SECONDS*2)
+    # start_sdn_fuzzer_pass_through_in_thread()
+    time.sleep(FLOWMOD_TIMEOUT_SECONDS)
     
     # start mininet
     print '[LOG] Starting mininet'
