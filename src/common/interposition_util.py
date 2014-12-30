@@ -32,6 +32,13 @@ def start_sdn_fuzzer_in_thread():
         json.dumps({'timeout_seconds':FLOWMOD_TIMEOUT_SECONDS}))
 
 
+FAILURE_PROBABILITY = .2
+def start_sdn_fuzzer_error_in_thread():
+    _thread_starter(
+        ReorderType.ERROR,
+        json.dumps({'failure_probability':FAILURE_PROBABILITY}))
+
+    
 def _thread_starter(reorder_type,additional_args=None):
     t = threading.Thread(
         target=_thread_sdn_fuzzer,args=(reorder_type,additional_args))
