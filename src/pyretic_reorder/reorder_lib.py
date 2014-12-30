@@ -18,7 +18,8 @@ class ReorderLib(DynamicPolicy):
         self.first_call()
         time.sleep(1)
         self.second_call()
-
+        time.sleep(1)
+        self.first_call()
         
     def first_call(self):
         '''
