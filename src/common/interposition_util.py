@@ -18,7 +18,7 @@ class HostPortPair(object):
         self.hostname = hostname
         self.port = port
 
-FUZZER_LISTENING_PORT = 39589
+FUZZER_LISTENING_PORT = 29599
 FUZZER_LISTENING_ADDR = HostPortPair('0.0.0.0',FUZZER_LISTENING_PORT)
 CONTROLLER_CONNECT_TO_ADDR = HostPortPair('127.0.0.1',6633)
 
@@ -33,6 +33,7 @@ def start_sdn_fuzzer_in_thread():
 
 
 FAILURE_PROBABILITY = .2
+# FAILURE_PROBABILITY = .0
 def start_sdn_fuzzer_error_in_thread():
     _thread_starter(
         ReorderType.ERROR,

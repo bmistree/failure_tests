@@ -50,14 +50,23 @@ def cleanup_floodlights():
         except Queue.Empty:
             break
 
+
+def add_flowmod(flowmod_name_short=0):
+    '''
+    @param {short} flowmod_name_short --- 16 bits.  Used as name for
+    entry as well as switch match.
+    '''
+    # using starting at inedex 2 to get rid of 0x preceding
+    hex_flowmod_switch = hex(flowmod_name_short)[2:]
+    if len(hex_flowmod_switch) == 1:
+        hex_flowmod_switch = '0' + hex_flowmod_switch
     
-def add_flowmod():
     flow_entry_dict = {
-        'switch': '00:00:00:00:00:00:00:01',
-        'name': 'flow-mod-1',
+        'switch': '00:00:00:00:00:00:00:%s' % hex_flowmod_switch,
+        'name': '%i' % flowmod_name_short,
         'cookie': '0',
         'priority': '32768',
-        'ingress-port': '1',
+        'ingress-port': '%i' % flowmod_name_short,
         'active': 'true',
         'actions': 'output=2'
         }
@@ -68,15 +77,16 @@ def add_flowmod():
     
     with open(os.devnull,'wb') as dev_null_fd:
         subprocess.call(cmd_vec, stdout=dev_null_fd,stderr=subprocess.STDOUT)
-
     
-def remove_flowmod():
+    
+    
+def remove_flowmod(flowmod_name_int=0):
     '''
     Sends a removal message to remove flow table entry added by a call
     to add_flowmod.
     '''
     flow_entry_dict = {
-        'name': 'flow-mod-1'
+        'name': '%i' % flowmod_name_int
         }
 
     cmd_vec = [
