@@ -56,13 +56,9 @@ def add_flowmod(flowmod_name_short=0):
     @param {short} flowmod_name_short --- 16 bits.  Used as name for
     entry as well as switch match.
     '''
-    # using starting at inedex 2 to get rid of 0x preceding
-    hex_flowmod_switch = hex(flowmod_name_short)[2:]
-    if len(hex_flowmod_switch) == 1:
-        hex_flowmod_switch = '0' + hex_flowmod_switch
     
     flow_entry_dict = {
-        'switch': '00:00:00:00:00:00:00:%s' % hex_flowmod_switch,
+        'switch': '00:00:00:00:00:00:00:01',
         'name': '%i' % flowmod_name_short,
         'cookie': '0',
         'priority': '32768',

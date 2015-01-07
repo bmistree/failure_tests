@@ -35,7 +35,6 @@ def run():
     start_floodlight()
     time.sleep(5)
     print '[LOG] Starting sdn fuzzer'
-    # start_sdn_fuzzer_pass_through_in_thread()
     start_sdn_fuzzer_error_in_thread()
     print '[LOG] Starting mininet'
     time.sleep(10)
@@ -44,7 +43,6 @@ def run():
 
     for i in range(0,NUM_ENTRIES_TO_ADD):
         add_flowmod(i)
-        # remove_flowmod(i)
 
     time.sleep(3)
     num_entries = num_flow_table_entries(switch_name)
@@ -53,7 +51,9 @@ def run():
     if num_entries == NUM_ENTRIES_TO_ADD:
         print 'Floodlight PASSED rejection test'
     else:
-        print 'Floodlight FAILED rejection test; num entries: %i' % num_entries
+        print (
+            'Floodlight FAILED rejection test; num entries: %i; num expected entries %i'
+            % (num_entries,NUM_ENTRIES_TO_ADD))
     print '\n\n'
 
 
