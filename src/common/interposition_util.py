@@ -26,6 +26,8 @@ def start_sdn_fuzzer_pass_through_in_thread():
     _thread_starter(ReorderType.WRITE_THROUGH)
 
     
+FLOWMOD_TIMEOUT_SECONDS=3.0
+    
 def start_sdn_fuzzer_in_thread():
     _thread_starter(
         ReorderType.TIMED_REVERSE,
@@ -49,8 +51,6 @@ def _thread_starter(reorder_type,additional_args=None):
     time.sleep(5)
     
 
-    
-FLOWMOD_TIMEOUT_SECONDS=3.0
 
 def _thread_sdn_fuzzer(reorder_type,additional_args):
     '''
