@@ -3,7 +3,7 @@
 
 if [ "$#" -ne 1 ]; then
     printf "\nPlease specify path to interposition.py "
-    printf "(including interposition.py).  This will "
+    printf "(including interpose.py).  This will "
     printf "likely be in the deps folder sdn_fuzz/bin.\n"
 else
     # provided path to interposition.
